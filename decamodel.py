@@ -29,12 +29,6 @@ st.markdown("""
         color: #4B382A;
         text-align: center;
     }
-    .centered {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
     .stApp {
         background-color: #D2B38C;
     }
@@ -49,12 +43,6 @@ st.markdown("""
         color: #4B382A;
         text-align: center;
         margin-top: 10px;
-    }
-    .center-button {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-        width: 100%;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -73,18 +61,29 @@ class DrinkDressApp:
             st.session_state.beverage_options = []
         if "heart_rate" not in st.session_state:
             st.session_state.heart_rate = None
+        if "user_name" not in st.session_state:
+            st.session_state.user_name = ""  # To store the user's name
 
     def welcome_screen(self):
         st.markdown('<div class="welcome-title">Drink Dress</div>', unsafe_allow_html=True)
         st.markdown('<div class="welcome-subtitle">Your Perfect Brew, Tailored Just For You</div>', unsafe_allow_html=True)
-        st.markdown("---")
+        st.markdown("---")  # This is the line
 
-        # Centered "Touch to get started" button
-        st.markdown('<div class="center-button">', unsafe_allow_html=True)
-        if st.button("Touch to get started"):
-            st.session_state.screen = "questions"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Use columns to center the button horizontally
+        col1, col2, col3, col4, col5 = st.columns(5)
+
+        with col1:
+            pass  # Empty column for spacing
+        with col2:
+            pass  # Empty column for spacing
+        with col4:
+            pass  # Empty column for spacing
+        with col5:
+            pass  # Empty column for spacing
+        with col3:
+            if st.button("Touch to get started"):
+                st.session_state.screen = "questions"
+                st.rerun()
 
     def show_questions(self):
         st.title("Customize Your Preferences")
@@ -117,12 +116,30 @@ class DrinkDressApp:
         st.write("Please place your fingers on the sensors.")
 
         if st.button("Start Scanning"):
-            st.session_state.screen = "scanning"
+            st.session_state.screen = "countdown"
             st.rerun()
 
         if st.button("Skip Biometric"):
             st.session_state.screen = "beverage_selection"
             st.rerun()
+
+    def show_countdown(self):
+        st.title("Get Ready to Scan")
+        st.markdown("---")
+
+        st.write("Position your index and middle fingers on the sensors. Scanning will begin in:")
+
+        # 3-second countdown
+        countdown_duration = 5  # Change this value to adjust the countdown duration
+        countdown_text = st.empty()
+
+        for i in range(countdown_duration, 0, -1):
+            countdown_text.write(f"**{i}**")
+            time.sleep(1)
+
+        # After countdown, proceed to scanning
+        st.session_state.screen = "scanning"
+        st.rerun()
 
     def show_scanning_screen(self):
         st.title("Scanning...")
@@ -149,7 +166,7 @@ class DrinkDressApp:
         st.title("Scanning Results")
         st.markdown("---")
 
-        st.write(f"Your heart rate is: **{st.session_state.heart_rate} bpm**")
+        st.write(f"Heart rate: **{st.session_state.heart_rate} bpm**")
 
         if st.button("Continue to Beverage Selection"):
             st.session_state.screen = "beverage_selection"
@@ -204,13 +221,19 @@ class DrinkDressApp:
             final_price = base_price * size_multiplier[st.session_state.selected_size]
             st.write(f"Price: ${final_price:.2f}")
 
+            # Collect the user's name
+            st.session_state.user_name = st.text_input("Please enter your name:")
+
             if st.button("Place order"):
-                st.success(f"Your {st.session_state.selected_size} {st.session_state.selected_drink['name']} is being prepared! Thank you for choosing Drink Dress. Please continue to the checkout counter to complete the transaction.")
-                if st.button("Start New Order"):
-                    # Reset session state and restart the app
-                    st.session_state.clear()
-                    st.session_state.screen = "welcome"
-                    st.rerun()
+                if st.session_state.user_name.strip() == "":
+                    st.error("Please enter your name before placing the order.")
+                else:
+                    st.success(f"Thank you, {st.session_state.user_name}! Your {st.session_state.selected_size} {st.session_state.selected_drink['name']} is being prepared. Please continue to the checkout counter to complete the transaction.")
+                    if st.button("Start New Order"):
+                        # Reset session state and restart the app
+                        st.session_state.clear()
+                        st.session_state.screen = "welcome"
+                        st.rerun()
 
 def main():
     app = DrinkDressApp()
@@ -221,6 +244,8 @@ def main():
         app.show_questions()
     elif st.session_state.screen == "biometric":
         app.show_biometric_screen()
+    elif st.session_state.screen == "countdown":
+        app.show_countdown()
     elif st.session_state.screen == "scanning":
         app.show_scanning_screen()
     elif st.session_state.screen == "scanning_results":

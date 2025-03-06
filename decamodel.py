@@ -75,8 +75,6 @@ class DrinkDressApp:
             st.session_state.beverage_options = []
         if "heart_rate" not in st.session_state:
             st.session_state.heart_rate = None
-        if "user_name" not in st.session_state:
-            st.session_state.user_name = ""
 
     def welcome_screen(self):
         st.markdown('<div class="centered">', unsafe_allow_html=True)
@@ -172,11 +170,11 @@ class DrinkDressApp:
         st.markdown("---")
 
         beverages = [
-            {"name": "Yemeni Mocha Delight", "ingredients": "Dark chocolate, Yemeni coffee, milk", "temp": "Hot", "price": "$5.00", "image": "placeholder.png"},
+            {"name": "Yemeni Mocha Delight", "ingredients": "Dark chocolate, Yemeni coffee, milk", "temp": "Warm", "price": "$5.00", "image": "placeholder.png"},
             {"name": "Spiced Qishr Latte", "ingredients": "Yemeni coffee husk, ginger, cinnamon", "temp": "Warm", "price": "$5.50", "image": "placeholder.png"},
-            {"name": "Honey Cardamom Cold Brew", "ingredients": "Yemeni coffee, honey, cardamom", "temp": "Cold", "price": "$4.99", "image": "placeholder.png"},
-            {"name": "Rose Almond Cappuccino", "ingredients": "Almond milk, rose syrup, Yemeni coffee", "temp": "Hot", "price": "$5.50", "image": "placeholder.png"},
-            {"name": "Saffron Pistachio Latte", "ingredients": "Yemeni coffee, saffron, pistachio syrup", "temp": "Warm", "price": "$6.00", "image": "placeholder.png"}
+            {"name": "Honey Cardamom Cold Brew", "ingredients": "Yemeni coffee, honey, cardamom", "temp": "Cold", "price": "$4.99", "image": "placeholder1.jpg"},
+            {"name": "Rose Almond Cappuccino", "ingredients": "Almond milk, rose syrup, Yemeni coffee", "temp": "Warm", "price": "$5.50", "image": "placeholder.png"},
+            {"name": "Saffron Pistachio Latte", "ingredients": "Yemeni coffee, saffron, pistachio syrup", "temp": "Cold", "price": "$6.00", "image": "placeholder1.jpg"}
         ]
 
         if not st.session_state.beverage_options:
@@ -216,18 +214,12 @@ class DrinkDressApp:
             final_price = base_price * size_multiplier[st.session_state.selected_size]
             st.write(f"Price: ${final_price:.2f}")
 
-            # Ask for the user's name
-            st.session_state.user_name = st.text_input("Please enter your name:")
-
             if st.button("Place order"):
-                if st.session_state.user_name.strip() == "":
-                    st.error("Please enter your name before placing the order.")
-                else:
-                    st.success(f"Thank you, {st.session_state.user_name}! Your {st.session_state.selected_size} {st.session_state.selected_drink['name']} is being prepared. Please continue to the checkout counter to complete the transaction.")
-                    if st.button("Start New Order"):
-                        st.session_state.clear()
-                        st.session_state.screen = "welcome"
-                        st.rerun()
+                st.success(f"Your {st.session_state.selected_size} {st.session_state.selected_drink['name']} is being prepared! Thank you for choosing Drink Dress. Please continue to the checkout counter to complete the transaction.")
+                if st.button("Start New Order"):
+                    st.session_state.clear()
+                    st.session_state.screen = "welcome"
+                    st.rerun()
 
 def main():
     app = DrinkDressApp()
